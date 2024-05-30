@@ -8,14 +8,6 @@ let circle2Ys = [540, 100, 280, 215];
 let circle3Xs = [175, 385, 370,  90];
 let circle3Ys = [175, 385, -15, 470];
 
-function minWindowSize(){
-  return min(windowWidth,windowHeight);
-}
-
-function randomColor(){
-  return color(random(255),random(255),random(255));
-}
-
 function setup() {
   let Size = minWindowSize();
   createCanvas(Size, Size);
@@ -25,35 +17,7 @@ function setup() {
   noLoop();
 }
 
-function circleRing(centerX, centerY){
-  let radius = 35;
-  let numRects = 20; 
-  let rectWidth = 5;
-  let rectHeight = 7;
-  let cornerRadius = 8;
-  let layerNum = random(4,6);
-  let s = 5/layerNum;
-  fill(randomColor());
-  stroke(0,0);
-  for(let a = 0; a < layerNum; a++){
 
-    for (let i = 0; i < numRects; i++) {
-      let angle = TWO_PI / numRects * i;
-      let x = centerX + cos(angle) * radius;
-      let y = centerY + sin(angle) * radius;
-     
-      push();
-      translate(x, y);
-      rotate(angle);
-      rectMode(CENTER);
-      rect(0, 0, rectWidth*s, rectHeight*s, cornerRadius);
-      pop();
-  }
-   radius = radius + 32/layerNum;
-   numRects = numRects +3;
-  }
-  
-}
 
 function drawConcentricCircles(centerX, centerY, maxDiameter, numCircles) {
   let step = maxDiameter / numCircles;
@@ -202,7 +166,8 @@ function draw() {
     fill(color(random(180,255),random(180,255),random(180,255)));
     stroke(randomColor());
     strokeWeight(random(1,4));
-    circle(x,y,140);
+    PerlinNoiseCircle(x,y);
+    
   
     drawConcentricCircles(x, y, 60, 8);
 
