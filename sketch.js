@@ -11,18 +11,6 @@ let perlinColors = [];
 let Colors = [];
 
 
-
-let offsetX = 0.0; // 初始值为 0.0
-
-function randomColor(offset) {
-  let r = map(noise(offset), 1, 0, 255);
-  let g = map(noise(offset), 1, 0, 255);
-  let b = map(noise(offset ), 0, 1, 0, 255);
-  return color(r, g, b);
- 
-}
-
-
 function setup() {
   let Size = minWindowSize();
   createCanvas(Size, Size);
@@ -127,7 +115,7 @@ class PerlinColor {
   }
 
   calculateBaseColor(x, y) {
-    // 根据圆心位置生成初始颜色值
+    
     return {
       r: map(noise(x * 0.01, y * 0.01), 0, 1, 0, 255),
       g: map(noise((x + 1000) * 0.01, (y + 1000) * 0.01), 0, 1, 0, 255),
@@ -144,7 +132,7 @@ class PerlinColor {
   }
 }
 
-// 使用 Perlin 噪声生成平滑变化的颜色
+
 function getPerlinColor(perlinColor) {
   const colorValues = perlinColor.getValue();
   return color(colorValues.r, colorValues.g, colorValues.b);
@@ -231,7 +219,7 @@ function Circle2(centerX, centerY){
   PerlinNoiseCircle(centerX, centerY,60,80);
 
   fill(255);
-  ellipse(centerX, centerY, 30, 30);  
+  PerlinNoiseCircle(centerX,centerY, 10, 15);
 
   for (let i = 0; i < numLayers; i++) {
     
@@ -327,16 +315,16 @@ function draw() {
     let g = map(noise(x * 0.1 + 100, y * 0.1 + 100), 0, 1, 0, 255);
     let b = map(noise(x * 0.1 + 200, y * 0.1 + 200), 0, 1, 0, 255);
     fill(r,g,b);
-    
+    stroke(255);
     PerlinNoiseCircle(x,y, 63, 80);
     Circle3(x,y);
-    fill(randomColor());
-    circle(x,y, 60);
+    fill(getPerlinColor(perlinColors[i]));
+    PerlinNoiseCircle(x,y, 30,40);
     drawConcentricCircles(x, y, 30, 5);
     
   
   }
-  offsetX += 0.01;
+ 
 }
 
 function windowResized(){
