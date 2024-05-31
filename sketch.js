@@ -9,7 +9,7 @@ let circle3Xs = [175, 385, 370,  90];
 let circle3Ys = [175, 385, -15, 470];
 let perlinColors = [];
 let Colors = [];
-let ChainX = [0, 50,90, 120, 150, 200, 240,250, 200, 210, 300,360, 450,470,400, 400];
+let ChainX = [-20, 50,90, 120, 150, 200, 240,250, 200, 210, 300,360, 450,470,400, 400];
 let ChainY = [120,145, 150,125, 90, 100,120,200, 260, 340,360,300,320,410,470, 500];
 let valueArrayLength = 50;
 let randomNumberArray = [];
@@ -131,7 +131,7 @@ function CreateCircle(x, y, randomOrNoiseArray,r){
 }
 
 function perlinNoiseLine(x1, y1, x2, y2, noiseScale, noiseStrength) {
-  let numPoints = dist(x1, y1, x2, y2) * 30;
+  let numPoints = dist(x1, y1, x2, y2) * 5;
   for (let i = 0; i <= numPoints; i++) {
     let t = i / numPoints;
     let x = lerp(x1, x2, t);
@@ -155,32 +155,30 @@ function draw() {
   // create chain
  
     for (let i = 0; i < ChainX.length-1; i++) {
-      let x = ChainX[i];
-      let y = ChainY[i];
+     
       let x1 = ChainX[i];
       let y1 = ChainY[i];
       let x2 = ChainX[i + 1];
       let y2 = ChainY[i + 1];
-  
-  
       noFill();
       stroke(getPerlinColor(perlinColors[i]));
       strokeWeight(2);
   
-      perlinNoiseLine(x1, y1, x2, y2, 1, 3);
-  
-      let r = map(noise(x * 0.1, y * 0.1), 0, 1, 0, 255);
-      let g = map(noise(x * 0.1 + 200, y * 0.1 + 100), 0, 1, 0, 255);
-      let b = map(noise(x * 0.1 + 300, y * 0.1 + 200), 0, 1, 0, 255);
-      
-      fill(r,g,b);
-      noStroke();
-      CreateCircle(x,y, randomNumberArray,10);
+      perlinNoiseLine(x1, y1, x2, y2, 0.05, 3);
       
   
     }
-  
-  
+    for (let i = 0; i < ChainX.length-1; i++) {
+    let x = ChainX[i];
+    let y = ChainY[i];
+    let r = map(noise(x * 0.1, y * 0.1), 0, 1, 0, 255);
+    let g = map(noise(x * 0.1 + 200, y * 0.1 + 100), 0, 1, 0, 255);
+    let b = map(noise(x * 0.1 + 300, y * 0.1 + 200), 0, 1, 0, 255);
+    
+    fill(r,g,b);
+    noStroke();
+   CreateCircle(x,y, randomNumberArray,10);
+  }
   //the origin circle
   for(let i = 0; i < centerXs.length; i++){
     let x = centerXs[i];
