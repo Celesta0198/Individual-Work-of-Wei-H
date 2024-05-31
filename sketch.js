@@ -8,14 +8,16 @@ let circle2Ys = [540, 100, 280, 215];
 let circle3Xs = [175, 385, 370,  90];
 let circle3Ys = [175, 385, -15, 470];
 let perlinColors = [];
+let Colors = [];
+
 
 
 let offsetX = 0.0; // 初始值为 0.0
 
 function randomColor(offset) {
-  let r = map(noise(offset), 0, 1, 0, 255);
-  let g = map(noise(offset + 1000), 0, 1, 0, 255);
-  let b = map(noise(offset + 2000), 0, 1, 0, 255);
+  let r = map(noise(offset), 1, 0, 255);
+  let g = map(noise(offset), 1, 0, 255);
+  let b = map(noise(offset ), 0, 1, 0, 255);
   return color(r, g, b);
  
 }
@@ -94,25 +96,25 @@ function circleRing(centerX, centerY){
 }
 
 let phase = 0;
+
 function PerlinNoiseCircle (centerX, centerY, Rmin, Rmax){
   push();
   translate(centerX,centerY);
-  stroke(randomColor());
-  strokeWeight()
+ 
   beginShape();
   let noiseMax = 2;
-
+  let zoff = 0;
   for(let a = 0; a < TWO_PI; a += radians(5)){
       let xoff = map(centerX + cos(a + phase), -1, 1, 0, noiseMax);
       let yoff = map(centerY + sin(a + phase), -1, 1, 0, noiseMax);
-      let r = map(noise(xoff, yoff), 0, 1, Rmin, Rmax);
+      let r = map(noise(xoff, yoff, zoff), 0, 1, Rmin, Rmax);
       let x = r * cos(a);
       let y = r * sin(a);
       vertex(x, y);
-      fill(random(180,255),random(180,255),random(180,255)); // 设置填充颜色
   }
   endShape(CLOSE);
-  phase += 0.001;
+  phase += 0.002;
+  zoff += 0.01;
   pop();
 }
 
@@ -135,9 +137,9 @@ class PerlinColor {
 
   getValue() {
     return {
-      r: map(noise(this.offsetR + millis() * 0.0001), 0, 1, this.baseColor.r, 255),
-      g: map(noise(this.offsetG + millis() * 0.0001), 0, 1, this.baseColor.g, 255),
-      b: map(noise(this.offsetB + millis() * 0.0001), 0, 1, this.baseColor.b, 255)
+      r: map(noise(this.offsetR + millis() * 0.001), 0, 1, this.baseColor.r, 255),
+      g: map(noise(this.offsetG + millis() * 0.001), 0, 1, this.baseColor.g, 255),
+      b: map(noise(this.offsetB + millis() * 0.001), 0, 1, this.baseColor.b, 255)
     };
   }
 }
@@ -151,19 +153,13 @@ function getPerlinColor(perlinColor) {
 
 function drawConcentricCircles(centerX, centerY, maxDiameter, numCircles) {
   let step = maxDiameter / numCircles;
-  let e = random(1,255);
   for (let i = 0; i < numCircles; i++) {
     let diameter = maxDiameter - i * step;
     let offsetX = random(-1, 1);
     let offsetY = random(-1, 1);
-    if(i<6){
-      fill(e, e, e);
-    }
-     else{
-      fill(randomColor());
-     } 
-    stroke(randomColor());
-    strokeWeight(random(0,5));
+    
+    fill(getPerlinColor(perlinColors[i]));
+    strokeWeight(1);
     ellipse(centerX + offsetX, centerY + offsetY, diameter, diameter);
   }
 }
@@ -197,7 +193,7 @@ function drawCircleLines(centerX, centerY, startRadius, numLines, lineLength) {
 
 
 // circle of lines
-function Circle1(centerX, centerY){
+function Circle1(centerX, centerY,col,col2){
   
   let baseRadius = 30; 
   let radiusIncrement = 5;
@@ -205,15 +201,18 @@ function Circle1(centerX, centerY){
  //circle out side
   fill(255, 204, 0);
   noStroke();
-  PerlinNoiseCircle(centerX,centerY, 60, 75);
+  PerlinNoiseCircle(centerX,centerY, 70, 80);
 
   // circle inside
-  fill(randomColor());
+  fill(col);
   noStroke();
-  PerlinNoiseCircle(centerX,centerY, 30, 50);
+  PerlinNoiseCircle(centerX,centerY, 20, 25);
 
-
+  
   for (let i = 0; i < numLayers; i++) {
+    let col2= getPerlinColor(perlinColors[i]);
+    fill(col2);
+
     drawCircleDots(centerX, centerY, baseRadius + i * radiusIncrement, 30 + i * 7, 5); 
   drawCircleLines(centerX, centerY, 30+ numLayers * radiusIncrement, 200, 20); 
   
@@ -221,24 +220,23 @@ function Circle1(centerX, centerY){
 
 //circle of dots
 function Circle2(centerX, centerY){
-  let numLayers = 10;       
+  let numLayers = 8;       
   let initialRadius = 30;  
   let radiusStep = 4;     
   let initialNumDots = 40;  
   let dotsIncrement = 6;  
-
+  const Colors =['pink', 'red', 'blue', 'yellow', 'orange','white','green'];
   fill(255,116,155);
   noStroke();
-  circle(centerX, centerY, 140);
+  PerlinNoiseCircle(centerX, centerY,60,80);
 
   fill(255);
   ellipse(centerX, centerY, 30, 30);  
 
   for (let i = 0; i < numLayers; i++) {
-    let r= map(noise(i), 0, 1, 0,255);
-    let g= map(noise(i), 0, 1, 0,255);
-    let b= map(noise(i), 0, 1, 0,255);
-    fill(r,g,b);
+    
+    let col = Colors[i% Colors.length];
+    fill(col);
     let radius = initialRadius + i * radiusStep;  
     let numDots = initialNumDots + i * dotsIncrement;  
     drawCircleDots(centerX, centerY, radius, numDots, 3);
@@ -287,12 +285,14 @@ function draw() {
   for(let i = 0; i < centerXs.length; i++){
     let x = centerXs[i];
     let y = centerYs[i];
-    fill(color(random(180,255),random(180,255),random(180,255)));
-    stroke(getPerlinColor(perlinColors[i]));
+    let r = map(noise(x * 0.1, y * 0.1), 0, 1, 0, 255);
+    let g = map(noise(x * 0.1 + 100, y * 0.1 + 100), 0, 1, 0, 255);
+    let b = map(noise(x * 0.1 + 200, y * 0.1 + 200), 0, 1, 0, 255);
+    fill(getPerlinColor(perlinColors[i]));
+    stroke(r,g,b);
     strokeWeight(random(1,4));
     PerlinNoiseCircle(x,y, 60, 80);
     
-  
     drawConcentricCircles(x, y, 60, 8);
 
  
@@ -304,8 +304,8 @@ function draw() {
   for(let i = 0; i < circle1Xs.length; i++){
     let x = circle1Xs[i];
     let y = circle1Ys[i];
-    fill(getPerlinColor(perlinColors[i]));
-    Circle1(x,y);
+    col = getPerlinColor(perlinColors[i]);
+    Circle1(x,y,col);
     
     
   
@@ -323,9 +323,12 @@ function draw() {
   for(let i = 0; i < circle3Xs.length; i++){
     let x = circle3Xs[i];
     let y = circle3Ys[i];
-    fill(color(random(180,255),random(180,255),random(180,255)));
+    let r = map(noise(x * 0.1, y * 0.1), 0, 1, 0, 255);
+    let g = map(noise(x * 0.1 + 100, y * 0.1 + 100), 0, 1, 0, 255);
+    let b = map(noise(x * 0.1 + 200, y * 0.1 + 200), 0, 1, 0, 255);
+    fill(r,g,b);
     
-    circle(x,y,140);
+    PerlinNoiseCircle(x,y, 63, 80);
     Circle3(x,y);
     fill(randomColor());
     circle(x,y, 60);
