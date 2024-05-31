@@ -16,9 +16,8 @@ function setup() {
   createCanvas(Size, Size);
   
   background(0, 84, 121);
+  slider = createSlider(0, 10, 2, 0.01);
 
-
-  
   for (let i = 0; i < centerXs.length; i++) {
     perlinColors.push(new PerlinColor(centerXs[i], centerYs[i]));
   }
@@ -53,16 +52,14 @@ function circleRing(centerX, centerY){
   let rectWidth = 5;
   let rectHeight = 7;
   let cornerRadius = 8;
-  let layerNum = 5;
+  let layerNum = random(4,5);
   let s = 5/layerNum;
   stroke(0,0);
   for(let a = 0; a < layerNum; a++){
-      let hue = map(a, 0, 9, 0, 360); 
-      let saturation = map(a, 0, 360, 50, 100); 
-      let brightness = 100; 
-      let alpha = map(a, 0, 9, 255, 0); 
-
-      fill(hue, saturation, brightness, alpha);
+      let r = map(noise(centerX*0.1+a,centerY*0.1+a), 0, 1, 100, 255); 
+      let g = map(noise(centerX*0.2+a,centerY*0.2+a), 0, 1, 100, 255); 
+      let b = map(noise(centerX*0.3+a,centerY*0.3+a), 0, 1, 100, 255); 
+      fill(r,g,b);
     for (let i = 0; i < numRects; i++) {
       let angle = TWO_PI / numRects * i;
       let x = centerX + cos(angle) * radius;
@@ -90,7 +87,7 @@ function PerlinNoiseCircle (centerX, centerY, Rmin, Rmax){
   translate(centerX,centerY);
  
   beginShape();
-  let noiseMax = 2;
+  let noiseMax = slider.value();
   let zoff = 0;
   for(let a = 0; a < TWO_PI; a += radians(5)){
       let xoff = map(centerX + cos(a + phase), -1, 1, 0, noiseMax);
@@ -155,15 +152,20 @@ function drawConcentricCircles(centerX, centerY, maxDiameter, numCircles) {
 function drawCircleDots(centerX, centerY, radius, numDots, dot) {
   let angleStep = TWO_PI / numDots;
   noStroke();
+  push();
+  translate(centerX,centerY);
+  let noiseMax= slider.value();
   for (let i = 0; i < numDots; i++) {
     let angle = i *angleStep;
-    
-    let x = centerX + cos(angle) * radius;
-    let y = centerY + sin(angle) * radius;
+    let xoff = map(centerX + cos(angle + phase), -1, 1, 0, noiseMax);
+    let yoff = map(centerY + sin(angle + phase), -1, 1, 0, noiseMax);
+    let r = map(noise(xoff, yoff), 0, 1, radius-10, radius);
+    let x =  cos(angle) * r ;
+    let y =  sin(angle) * r ;
     ellipse(x, y, dot, dot); 
   
   }
-  
+  pop();
 }
 
 function drawCircleLines(centerX, centerY, startRadius, numLines, lineLength) {
@@ -181,15 +183,15 @@ function drawCircleLines(centerX, centerY, startRadius, numLines, lineLength) {
 
 
 // circle of lines
-function Circle1(centerX, centerY,col,col2){
+function Circle1(centerX, centerY,col){
   
-  let baseRadius = 30; 
+  let r = 35; 
   let radiusIncrement = 5;
   let numLayers = 4; 
  //circle out side
   fill(255, 204, 0);
   noStroke();
-  PerlinNoiseCircle(centerX,centerY, 70, 80);
+  PerlinNoiseCircle(centerX,centerY, 70, 73);
 
   // circle inside
   fill(col);
@@ -201,7 +203,7 @@ function Circle1(centerX, centerY,col,col2){
     let col2= getPerlinColor(perlinColors[i]);
     fill(col2);
 
-    drawCircleDots(centerX, centerY, baseRadius + i * radiusIncrement, 30 + i * 7, 5); 
+    drawCircleDots(centerX, centerY, r + i * radiusIncrement, 30 + i * 7, 5); 
   drawCircleLines(centerX, centerY, 30+ numLayers * radiusIncrement, 200, 20); 
   
 }}
