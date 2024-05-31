@@ -131,7 +131,7 @@ function CreateCircle(x, y, randomOrNoiseArray,r){
 }
 
 function perlinNoiseLine(x1, y1, x2, y2, noiseScale, noiseStrength) {
-  let numPoints = dist(x1, y1, x2, y2) * 5;
+  let numPoints = dist(x1, y1, x2, y2) * 4;
   for (let i = 0; i <= numPoints; i++) {
     let t = i / numPoints;
     let x = lerp(x1, x2, t);
@@ -164,7 +164,7 @@ function draw() {
       stroke(getPerlinColor(perlinColors[i]));
       strokeWeight(2);
   
-      perlinNoiseLine(x1, y1, x2, y2, 0.05, 3);
+      perlinNoiseLine(x1, y1, x2, y2, 1, 3);
       
   
     }
