@@ -3,7 +3,8 @@ function minWindowSize(){
   }
 
   let phase = 0;
-
+// Based on The Coding Train: Coding Challenge #136.1: Polar Perlin Noise Loops
+// https://www.youtube.com/watch?v=ZI1dmHv3MeM
 function PerlinNoiseCircle (centerX, centerY, Rmin, Rmax){
   push();
   translate(centerX,centerY);
@@ -24,15 +25,16 @@ function PerlinNoiseCircle (centerX, centerY, Rmin, Rmax){
   zoff += 0.01;
   pop();
 }
-
+// let colors change smoothly over time
 class PerlinColor {
   constructor(x, y) {
+    //random start point of noise.
     this.offsetR = random(1000);
     this.offsetG = random(1000);
     this.offsetB = random(1000);
     this.baseColor = this.calculateBaseColor(x, y);
   }
-
+    //give a base color, using the position of center.
   calculateBaseColor(x, y) {
     
     return {
@@ -41,7 +43,7 @@ class PerlinColor {
       b: map(noise((x + 2000) * 0.01, (y + 2000) * 0.01), 0, 1, 0, 255)
     };
   }
-
+// use millis to let color changes over time
   getValue() {
     return {
       r: map(noise(this.offsetR + millis() * 0.001), 0, 1, this.baseColor.r, 255),
@@ -50,7 +52,7 @@ class PerlinColor {
     };
   }
 }
-
+//return the color.
 function getPerlinColor(perlinColor) {
   const colorValues = perlinColor.getValue();
   return color(colorValues.r, colorValues.g, colorValues.b);
@@ -88,7 +90,7 @@ function drawCircleDots(centerX, centerY, radius, numDots, dot) {
       line(xStart, yStart, xEnd, yEnd); 
     }
   }
-
+// circleRing of the original circle
   function circleRing(centerX, centerY){
     let radius = 35;
     let numRects = 20; 

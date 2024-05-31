@@ -9,14 +9,23 @@ let circle3Xs = [175, 385, 370,  90];
 let circle3Ys = [175, 385, -15, 470];
 let perlinColors = [];
 let Colors = [];
+let ChainX = [0, 50,90, 120, 150, 200, 240,250, 200, 210, 300,360, 450,470,400, 400];
+let ChainY = [120,145, 150,125, 90, 100,120,200, 260, 340,360,300,320,410,470, 500];
+let valueArrayLength = 50;
+let randomNumberArray = [];
 
 function setup() {
   let Size = minWindowSize();
   createCanvas(Size, Size);
   
+  
   background(0, 84, 121);
-  slider = createSlider(0, 10, 2, 0.01);
+  slider = createSlider(0, 10, 2, 0.01);//create a slider to control noiseMax. I learned from the coding train.
 
+  for (let i = 0; i < valueArrayLength; i++) {
+    randomNumberArray.push(random(0, 1));
+  }
+ // put color from each position into a group.
   for (let i = 0; i < centerXs.length; i++) {
     perlinColors.push(new PerlinColor(centerXs[i], centerYs[i]));
   }
@@ -115,10 +124,63 @@ function Circle3(centerX, centerY){
   endShape(CLOSE);
 }
 
+function CreateCircle(x, y, randomOrNoiseArray,r){
+  
+  ellipse(x , y , r+ randomOrNoiseArray[frameCount % valueArrayLength] *5 );
+  
+}
+
+function perlinNoiseLine(x1, y1, x2, y2, noiseScale, noiseStrength) {
+  let numPoints = dist(x1, y1, x2, y2) * 30;
+  for (let i = 0; i <= numPoints; i++) {
+    let t = i / numPoints;
+    let x = lerp(x1, x2, t);
+    let y = lerp(y1, y2, t);
+    let noiseValue = noise(x * noiseScale, y * noiseScale);
+    let offsetX = map(noiseValue, 0, 1, -noiseStrength, noiseStrength);
+    let offsetY = map(noiseValue, 0, 1, -noiseStrength, noiseStrength);
+    vertex(x + offsetX, y + offsetY);
+  }
+  endShape();
+}
+
+
+
+
+
 function draw() {
   background(0, 84, 121);
   let Size = minWindowSize();
   scale(Size/500);
+  // create chain
+ 
+    for (let i = 0; i < ChainX.length-1; i++) {
+      let x = ChainX[i];
+      let y = ChainY[i];
+      let x1 = ChainX[i];
+      let y1 = ChainY[i];
+      let x2 = ChainX[i + 1];
+      let y2 = ChainY[i + 1];
+  
+  
+      noFill();
+      stroke(getPerlinColor(perlinColors[i]));
+      strokeWeight(2);
+  
+      perlinNoiseLine(x1, y1, x2, y2, 1, 3);
+  
+      let r = map(noise(x * 0.1, y * 0.1), 0, 1, 0, 255);
+      let g = map(noise(x * 0.1 + 200, y * 0.1 + 100), 0, 1, 0, 255);
+      let b = map(noise(x * 0.1 + 300, y * 0.1 + 200), 0, 1, 0, 255);
+      
+      fill(r,g,b);
+      noStroke();
+      CreateCircle(x,y, randomNumberArray,10);
+      
+  
+    }
+  
+  
   //the origin circle
   for(let i = 0; i < centerXs.length; i++){
     let x = centerXs[i];
@@ -166,7 +228,14 @@ function draw() {
     PerlinNoiseCircle(x,y, 30,40);
     drawConcentricCircles(x, y, 30, 5);
   }
+
+  noFill();
+  
+  
 }
+
+
+
 function windowResized(){
   let Size = minWindowSize();
   resizeCanvas(Size, Size);
