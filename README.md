@@ -31,7 +31,7 @@ I was inspired by the wave patterns formed by water under the influence of sound
 
 ### Technical Explanation
 #### 1. Color Change
-##### 1.1 Use Random() to pick color
+##### 1.1 Use Random() to pick colors
 
 I use random values to assign colors to radial lines within the circles. These lines refresh their filled colors frame by frame, creating a rotating effect.
 
